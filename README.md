@@ -40,13 +40,16 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/](https://github.com/)Akshansh777/smart_scanner.git
-   cd smart-document-scanner
+   git clone https://github.com/Akshansh777/smart_scanner.git
+   cd smart_scanner
+   ```
 
 2. **Install Flutter dependencies:**
    ```bash
-flutter pub get
+   flutter pub get
+   ```
 
 3. **Run the app with your Gemini API key:**
    ```bash
-flutter run --dart-define=GEMINI_API_KEY="YOUR_ACTUAL_GEMINI_API_KEY"
+   flutter run --dart-define=GEMINI_API_KEY="YOUR_ACTUAL_GEMINI_API_KEY"
+   ```
