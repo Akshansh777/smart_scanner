@@ -4,6 +4,10 @@ import 'package:cunning_document_scanner/cunning_document_scanner.dart'
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_scanner/features/home/screens/home_screen.dart';
+ import 'dart:io';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 class ScanDocs extends StatefulWidget {
   const ScanDocs({super.key});
@@ -104,24 +108,48 @@ class _ScanDocsState extends State<ScanDocs> {
     }
   }
 
-/////////////
+/////////////l
 
-  Future<void> openDocumentScanner() async {
-    try {
-      final images = await CunningDocumentScanner.getPictures();
+ 
 
-      if (images == null || images.isEmpty || !mounted) {
-        return;
-      }
-
-      setState(() {
-        selectedImage = XFile(images.first);
-      });
-    } catch (e) {
-      debugPrint('Document scanner error: $e');
-    }
+Future<List<String>> saveScannedImages(List<String> images) async {
+  final dir = await getApplicationDocumentsDirectory();
+  final scansDir = Directory(p.join(dir.path, 'scans'));
+  if (!await scansDir.exists()) {
+    await scansDir.create(recursive: true);
   }
 
+  final savedPaths = <String>[];
+  for (final imagePath in images) {
+    final fileName =
+        '${DateTime.now().millisecondsSinceEpoch}_${p.basename(imagePath)}';
+    final saved = await File(imagePath).copy(p.join(scansDir.path, fileName));
+    savedPaths.add(saved.path);
+  }
+  return savedPaths;
+}
+
+Future<void> openDocumentScanner() async {
+  try {
+    final images = await CunningDocumentScanner.getPictures();
+
+    if (!mounted) return;
+    if (images == null || images.isEmpty) return;
+
+    final savedPaths = await saveScannedImages(images);
+    debugPrint('Saved to: $savedPaths');
+
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      (route) => false,
+    );
+  } catch (e, stackTrace) {
+    debugPrint('Scanner error: $e');
+    debugPrintStack(stackTrace: stackTrace);
+  }
+}
 ///////////
   @override
   Widget build(BuildContext context) {
@@ -195,7 +223,7 @@ class _ScanDocsState extends State<ScanDocs> {
 
                   // Camera button
                   ElevatedButton(
-                    onPressed: CameraDocument,
+                    onPressed: openDocumentScanner,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFF7F1FC),
                       foregroundColor: const Color(0xFF7050A0),
@@ -217,7 +245,9 @@ class _ScanDocsState extends State<ScanDocs> {
               const SizedBox(height: 10),
 //////////////////////////////////////////////// scan button
               ElevatedButton.icon(
-                onPressed: openDocumentScanner,
+                onPressed: () {
+                  scanDocument();
+                },
                 icon: const Icon(Icons.document_scanner),
                 label: const Text('Scan Document'),
               ),
