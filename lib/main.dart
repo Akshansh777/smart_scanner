@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/services/database_service.dart';
 import 'core/theme/app_theme.dart';
+import 'features/home/screens/home_screen.dart' show HomeScreen;
 import 'features/home/screens/main_nav_scaffold.dart';
 
 void main() async {
@@ -29,8 +30,11 @@ class SmartScannerApp extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Document Scanner',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      
+      theme: ThemeData.light(useMaterial3: true),
+      
       home: const MainNavScaffold(),
+       //home: HomeScreen(),
     );
   }
 }

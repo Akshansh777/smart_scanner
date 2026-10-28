@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../core/models/scanned_document.dart';
+import 'package:smart_scanner/features/home/screens/camera.dart' show ScanDocs;
+//import '../../../core/models/scanned_document.dart';
 import '../controllers/document_list_controller.dart';
-import '../../ai_assistant/screens/ai_summary_screen.dart';
+//import '../../ai_assistant/screens/ai_summary_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -14,29 +15,60 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        //elevation: 10,
+        toolbarHeight: 120,
+        backgroundColor: const Color.fromARGB(255, 255, 252, 252),
         title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('Smart Scanner', style: TextStyle(fontWeight: FontWeight.w700)),
-            Text(
-              'Turn your documents into knowledge.',
-              style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+          children: [
+            Align(
+              alignment: AlignmentGeometry.topLeft,
+              child: Row(
+                children: [
+                  const Text(
+                    "AI SCANNER ",
+                    style: TextStyle(
+                      fontSize: 38,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(31, 31, 31, 1),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.settings),
+                  ),
+                ],
+              ),
+            ),
+            //SizedBox(height: 2),
+            const Align(
+              alignment: AlignmentGeometry.topLeft,
+              child: Text(
+                "SCANNER",
+                style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 19, 98, 236),
+                ),
+              ),
+            ),
+            const Align(
+              alignment: AlignmentGeometry.topLeft,
+              child: Text(
+                "Scan. Convert. Understand.",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight(350)),
+              ),
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {},
-          ),
-        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF3B82F6),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Starting Scanner (Handled by Member 2)')),
+            const SnackBar(
+                content: Text('Starting Scanner (Handled by Member 2)')),
           );
         },
       ),
@@ -53,46 +85,34 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisSpacing: 12,
                 childAspectRatio: 1.35,
                 children: [
-                  _QuickActionCard(
-                    icon: Icons.camera_alt_outlined,
-                    label: 'Scan\nDocument',
-                    iconColor: Colors.blueAccent,
-                    onTap: () {},
-                  ),
-                  _QuickActionCard(
-                    icon: Icons.text_snippet_outlined,
-                    label: 'Extract\nText (OCR)',
-                    iconColor: Colors.cyanAccent,
-                    onTap: () {},
-                  ),
-                  _QuickActionCard(
-                    icon: Icons.picture_as_pdf_outlined,
-                    label: 'View &\nEdit PDF',
-                    iconColor: Colors.redAccent,
-                    onTap: () {},
-                  ),
-                  _QuickActionCard(
-                    icon: Icons.auto_awesome,
-                    label: 'AI Summarize\n& Q&A',
-                    iconColor: Colors.purpleAccent,
-                    onTap: () {
-                      if (documents.isNotEmpty) {
+                  HomepageContainers(
+                      ic: Icons.settings_rounded,
+                      name: "Scan\nDocuments",
+                      onClick: () {
                         Navigator.push(
+                          ///access the camera
                           context,
                           MaterialPageRoute(
-                            builder: (_) => AiSummaryScreen(document: documents.first),
-                          ),
+                              builder: (context) => const ScanDocs()),
                         );
-                      }
-                    },
+                      }),
+                  const HomepageContainers(
+                      ic: (Icons.text_snippet_outlined),
+                      name: 'Extract\nText (OCR)'),
+                  const HomepageContainers(
+                    ic: Icons.picture_as_pdf_outlined,
+                    name: 'View &\nEdit PDF',
                   ),
+                  const HomepageContainers(
+                      ic: Icons.auto_awesome, name: 'AI Summarize\n& Q&A'),
                 ],
               ),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -102,7 +122,8 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () {},
-                    child: const Text('See All', style: TextStyle(color: Color(0xFF3B82F6))),
+                    child: const Text('See All',
+                        style: TextStyle(color: Color(0xFF3B82F6))),
                   ),
                 ],
               ),
@@ -115,9 +136,11 @@ class HomeScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.folder_open, size: 54, color: Colors.grey.shade600),
+                        Icon(Icons.folder_open,
+                            size: 54, color: Colors.grey.shade600),
                         const SizedBox(height: 12),
-                        const Text('No documents scanned yet', style: TextStyle(color: Colors.grey)),
+                        const Text('No documents scanned yet',
+                            style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                   ),
@@ -126,7 +149,7 @@ class HomeScreen extends ConsumerWidget {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final doc = documents[index];
-                      return _DocumentListTile(document: doc);
+                      return HomeScreen();
                     },
                     childCount: documents.length,
                   ),
@@ -137,99 +160,111 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _QuickActionCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color iconColor;
-  final VoidCallback onTap;
+/// card containers
+// class _QuickActionCard extends StatelessWidget {
+//   final IconData icon;
+//   final String label;
+//   final Color iconColor;
+//   final VoidCallback onTap;
 
-  const _QuickActionCard({
-    required this.icon,
-    required this.label,
-    required this.iconColor,
-    required this.onTap,
+//   const _QuickActionCard({
+//     required this.icon,
+//     required this.label,
+//     required this.iconColor,
+//     required this.onTap,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return InkWell(
+//       onTap: onTap,
+//       borderRadius: BorderRadius.circular(16),
+//       child: Ink(
+//         decoration: BoxDecoration(
+//           color: const Color.fromARGB(255, 228, 230, 234),
+//           borderRadius: BorderRadius.circular(16),
+//           border: Border.all(color: Colors.white.withOpacity(0.06)),
+//         ),
+//         padding: const EdgeInsets.all(16),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Container(
+//               padding: const EdgeInsets.all(8),
+//               decoration: BoxDecoration(
+//                 color: iconColor.withOpacity(0.15),
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//               child: Icon(icon, color: iconColor, size: 24),
+//             ),
+//             Text(
+//               label,
+//               style: const TextStyle(
+//                   fontWeight: FontWeight.w600, fontSize: 13, height: 1.2),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class HomepageContainers extends StatelessWidget {
+  final IconData ic;
+  final String name;
+  final String? col;
+  final VoidCallback? onClick;
+
+  const HomepageContainers({
+    super.key,
+    required this.ic,
+    required this.name,
+    this.col,
+    this.onClick,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.06)),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: iconColor, size: 24),
-            ),
-            Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, height: 1.2),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DocumentListTile extends StatelessWidget {
-  final ScannedDocument document;
-
-  const _DocumentListTile({required this.document});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        leading: Container(
-          width: 44,
-          height: 44,
+    return Padding(
+      padding: const EdgeInsets.all(6),
+      child: InkWell(
+        onTap: onClick,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          height: 190,
+          width: 190,
           decoration: BoxDecoration(
-            color: Colors.redAccent.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(8),
+            color: const Color.fromARGB(66, 248, 245, 245),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: const [
+              BoxShadow(
+                color: Color.fromARGB(179, 206, 199, 199),
+                spreadRadius: 1,
+                offset: Offset(2, 4),
+              ),
+            ],
           ),
-          child: const Icon(Icons.picture_as_pdf, color: Colors.redAccent, size: 22),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: onClick,
+                icon: Icon(ic),
+                iconSize: 40,
+                color: const Color.fromARGB(255, 3, 132, 238),
+              ),
+              Text(
+                name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ),
-        title: Text(
-          document.title,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          '${document.pageCount} pages • ${DateFormat('d MMM yyyy').format(document.createdAt)}',
-          style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.more_vert, size: 20),
-          onPressed: () {},
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AiSummaryScreen(document: document),
-            ),
-          );
-        },
       ),
     );
   }
