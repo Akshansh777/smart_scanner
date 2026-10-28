@@ -4,8 +4,9 @@ import '../../../core/models/chat_message.dart';
 import '../../../core/services/gemini_service.dart';
 import '../../home/controllers/document_list_controller.dart';
 
-final aiChatControllerProvider = StateNotifierProvider.family<
-    AiChatController, AiChatState, String>((ref, documentId) {
+final aiChatControllerProvider =
+    StateNotifierProvider.family<AiChatController, AiChatState, String>(
+        (ref, documentId) {
   final gemini = ref.watch(geminiServiceProvider);
   final docController = ref.read(documentListControllerProvider.notifier);
   return AiChatController(
@@ -31,13 +32,13 @@ class AiChatState {
   AiChatState copyWith({
     bool? isLoading,
     String? summary,
-    List<ChatMessage> messages,
+    List<ChatMessage>? messages,
     String? errorMessage,
   }) {
     return AiChatState(
       isLoading: isLoading ?? this.isLoading,
       summary: summary ?? this.summary,
-      messages: messages,
+      messages: messages?? this.messages,
       errorMessage: errorMessage,
     );
   }
@@ -57,7 +58,8 @@ class AiChatController extends StateNotifier<AiChatState> {
         _docController = docController,
         super(AiChatState());
 
-  Future<void> generateInitialSummary(String rawText, {String? cachedSummary}) async {
+  Future<void> generateInitialSummary(String rawText,
+      {String? cachedSummary}) async {
     if (cachedSummary != null && cachedSummary.isNotEmpty) {
       state = state.copyWith(summary: cachedSummary);
       return;
@@ -92,10 +94,12 @@ class AiChatController extends StateNotifier<AiChatState> {
     );
 
     try {
-      final history = state.messages.map((m) => {
-        'role': m.isUser ? 'user' : 'model',
-        'text': m.text,
-      }).toList();
+      final history = state.messages
+          .map((m) => {
+                'role': m.isUser ? 'user' : 'model',
+                'text': m.text,
+              })
+          .toList();
 
       final answer = await _geminiService.askDocumentQuestion(
         rawOcrText: rawText,

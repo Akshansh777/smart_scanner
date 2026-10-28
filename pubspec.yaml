@@ -9,32 +9,36 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-  # State Management & Architecture
+
+  # State Management
   flutter_riverpod: ^2.5.1
-  
+
   # AI Integration
   google_generative_ai: ^0.4.7
-  
-  # Local Persistence & Path Handling
+
+  # Local Storage
   hive_ce: ^2.22.0
   hive_ce_flutter: ^2.2.0
   path_provider: ^2.1.2
-  
-  # UI & Markdown Display
+
+  # UI
   flutter_markdown: ^0.7.1
   intl: ^0.19.0
   uuid: ^4.3.3
 
-  # Plugins for Member 2 & Member 3 to activate
+  # Document Scanner
   google_mlkit_document_scanner: ^0.2.0
   google_mlkit_text_recognition: ^0.13.0
-  syncfusion_flutter_pdfviewer: ^25.2.7
+  syncfusion_flutter_pdfviewer: ^32.2.9
   pdf: ^3.10.8
   printing: ^5.13.1
-  share_plus: ^9.0.0
+  share_plus: ^12.0.2
+  image_picker: ^1.2.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
