@@ -24,7 +24,7 @@
 | :--- | :--- | :--- |
 | **Akshansh (Lead)** | System Architecture, Storage & AI | App Shell, Riverpod, Hive CE DB, Gemini 1.5 Service (`features/ai_assistant`, `core/`) |
 | **Krishna** | Camera Scanner & ML OCR | Native ML Scanner UI, Auto-crop/Filter, Offline OCR (`features/scanner/`) |
-| **Aryan** | PDF Generation, Viewer & Canvas | Image-to-PDF, PDF Viewer, Canvas Annotations, Share Sheet (`features/pdf_workspace/`) |
+| **Arun** | PDF Generation, Viewer & Canvas | Image-to-PDF, PDF Viewer, Canvas Annotations, Share Sheet (`features/pdf_workspace/`) |
 
 ---
 
