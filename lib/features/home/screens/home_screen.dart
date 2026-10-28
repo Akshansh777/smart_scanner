@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:smart_scanner/features/home/screens/camera.dart' show ScanDocs;
+import 'package:smart_scanner/features/home/screens/camera.dart' show ScanDocs, camera;
 //import '../../../core/models/scanned_document.dart';
 import '../controllers/document_list_controller.dart';
 //import '../../ai_assistant/screens/ai_summary_screen.dart';
@@ -66,10 +66,10 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: const Color(0xFF3B82F6),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Starting Scanner (Handled by Member 2)')),
-          );
+          
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const ScanDocs()));
+              
         },
       ),
       body: CustomScrollView(
@@ -86,6 +86,7 @@ class HomeScreen extends ConsumerWidget {
                 childAspectRatio: 1.35,
                 children: [
                   HomepageContainers(
+                    iconColor: Colors.blueAccent,
                       ic: Icons.settings_rounded,
                       name: "Scan\nDocuments",
                       onClick: () {
@@ -97,13 +98,16 @@ class HomeScreen extends ConsumerWidget {
                         );
                       }),
                   const HomepageContainers(
+                    iconColor: Colors.blue,
                       ic: (Icons.text_snippet_outlined),
                       name: 'Extract\nText (OCR)'),
                   const HomepageContainers(
+                    iconColor: Colors.red,
                     ic: Icons.picture_as_pdf_outlined,
                     name: 'View &\nEdit PDF',
                   ),
                   const HomepageContainers(
+                    iconColor: Colors.blue,
                       ic: Icons.auto_awesome, name: 'AI Summarize\n& Q&A'),
                 ],
               ),
@@ -213,14 +217,14 @@ class HomeScreen extends ConsumerWidget {
 class HomepageContainers extends StatelessWidget {
   final IconData ic;
   final String name;
-  final String? col;
+  final Color iconColor;
   final VoidCallback? onClick;
 
   const HomepageContainers({
     super.key,
     required this.ic,
     required this.name,
-    this.col,
+    required this.iconColor,
     this.onClick,
   });
 
@@ -250,9 +254,9 @@ class HomepageContainers extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: onClick,
-                icon: Icon(ic),
-                iconSize: 40,
-                color: const Color.fromARGB(255, 3, 132, 238),
+                icon: Icon(ic,color: iconColor,),
+                iconSize: 45,
+                
               ),
               Text(
                 name,
