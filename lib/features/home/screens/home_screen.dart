@@ -6,6 +6,7 @@ import 'package:smart_scanner/features/home/screens/Setting_Icon.dart';
 import 'package:smart_scanner/features/home/screens/camera.dart'
     show ScanDocs, camera;
 //import '../../../core/models/scanned_document.dart';
+import '../../scanner/Extract  ORC/orc.dart' show ExtractOcrScreen;
 import '../controllers/document_list_controller.dart';
 //import '../../ai_assistant/screens/ai_summary_screen.dart';
 
@@ -28,7 +29,7 @@ class HomeScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   const Text(
-                    "AI SCANNER ",
+                    "AI SMART ",
                     style: TextStyle(
                       fontSize: 38,
                       fontWeight: FontWeight.bold,
@@ -45,7 +46,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.settings),
+                    icon: const Icon(Icons.person_add_alt_1,size: 32,),
                   ),
                 ],
               ),
@@ -56,7 +57,7 @@ class HomeScreen extends ConsumerWidget {
               child: Text(
                 "SCANNER",
                 style: TextStyle(
-                  fontSize: 35,
+                  fontSize: 37,
                   fontWeight: FontWeight.bold,
                   color: const Color.fromARGB(255, 19, 98, 236),
                 ),
@@ -95,7 +96,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   HomepageContainers(
                       iconColor: Colors.blueAccent,
-                      ic: Icons.settings_rounded,
+                      ic: Icons.camera_rounded,
                       name: "Scan\nDocuments",
                       onClick: () {
                         Navigator.push(
@@ -105,10 +106,19 @@ class HomeScreen extends ConsumerWidget {
                               builder: (context) => const ScanDocs()),
                         );
                       }),
-                  const HomepageContainers(
-                      iconColor: Colors.blue,
-                      ic: (Icons.text_snippet_outlined),
-                      name: 'Extract\nText (OCR)'),
+                  HomepageContainers(
+                    iconColor: const Color.fromARGB(255, 239, 70, 241),
+                    ic: Icons.document_scanner_outlined,
+                    name: 'Extract\nText (OCR)',
+                    onClick: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ExtractOcrScreen(),
+                        ),
+                      );
+                    },
+                  ),
                   const HomepageContainers(
                     iconColor: Colors.red,
                     ic: Icons.picture_as_pdf_outlined,

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/services/database_service.dart';
-import 'core/theme/app_theme.dart';
-import 'features/home/screens/home_screen.dart' show HomeScreen;
+import 'core/services/database_service.dart' show DatabaseService;
 import 'features/home/screens/main_nav_scaffold.dart';
 
-void main() async {
+// Keep your existing imports for:
+// DatabaseService
+// databaseserviceProvider
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive CE local persistence
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
+
+  // Initialize the database
   final dbService = DatabaseService();
   await dbService.init();
 
@@ -30,11 +37,10 @@ class SmartScannerApp extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Document Scanner',
       debugShowCheckedModeBanner: false,
-      
-      theme: ThemeData.light(useMaterial3: true),
-      
+      theme: ThemeData.light().copyWith(
+        useMaterial3: true,
+      ),
       home: const MainNavScaffold(),
-       //home: HomeScreen(),
     );
   }
 }

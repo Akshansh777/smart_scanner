@@ -5,7 +5,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_scanner/features/home/screens/home_screen.dart';
- import 'dart:io';
+import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -110,146 +110,230 @@ class _ScanDocsState extends State<ScanDocs> {
 
 /////////////l
 
- 
+  Future<List<String>> saveScannedImages(List<String> images) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final scansDir = Directory(p.join(dir.path, 'scans'));
+    if (!await scansDir.exists()) {
+      await scansDir.create(recursive: true);
+    }
 
-Future<List<String>> saveScannedImages(List<String> images) async {
-  final dir = await getApplicationDocumentsDirectory();
-  final scansDir = Directory(p.join(dir.path, 'scans'));
-  if (!await scansDir.exists()) {
-    await scansDir.create(recursive: true);
+    final savedPaths = <String>[];
+    for (final imagePath in images) {
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${p.basename(imagePath)}';
+      final saved = await File(imagePath).copy(p.join(scansDir.path, fileName));
+      savedPaths.add(saved.path);
+    }
+    return savedPaths;
   }
 
-  final savedPaths = <String>[];
-  for (final imagePath in images) {
-    final fileName =
-        '${DateTime.now().millisecondsSinceEpoch}_${p.basename(imagePath)}';
-    final saved = await File(imagePath).copy(p.join(scansDir.path, fileName));
-    savedPaths.add(saved.path);
+  Future<void> openDocumentScanner() async {
+    try {
+      final images = await CunningDocumentScanner.getPictures();
+
+      if (!mounted) return;
+      if (images == null || images.isEmpty) return;
+
+      final savedPaths = await saveScannedImages(images);
+      debugPrint('Saved to: $savedPaths');
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (route) => false,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Scanner error: $e');
+      debugPrintStack(stackTrace: stackTrace);
+    }
   }
-  return savedPaths;
-}
-
-Future<void> openDocumentScanner() async {
-  try {
-    final images = await CunningDocumentScanner.getPictures();
-
-    if (!mounted) return;
-    if (images == null || images.isEmpty) return;
-
-    final savedPaths = await saveScannedImages(images);
-    debugPrint('Saved to: $savedPaths');
-
-    if (!mounted) return;
-
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
-      (route) => false,
-    );
-  } catch (e, stackTrace) {
-    debugPrint('Scanner error: $e');
-    debugPrintStack(stackTrace: stackTrace);
-  }
-}
 ///////////
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAF9FC),
       appBar: AppBar(
-        title: const Text('Scan Document'),
-        backgroundColor: const Color.fromARGB(255, 248, 249, 250),
-        foregroundColor: const Color.fromARGB(255, 12, 11, 11),
+        title: const Text(
+          'Scan Document',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 21,
+          ),
+        ),
+        backgroundColor: const Color(0xFFFAF9FC),
+        foregroundColor: const Color(0xFF19171D),
+        elevation: 0,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 22),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Dotted image preview area
-              Expanded(
-                flex: 5,
+              const SizedBox(height: 30),
+
+              // Camera icon
+              Center(
                 child: Container(
-                  width: double.infinity,
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 1.5,
-                      style: BorderStyle.solid,
-                    ),
+                    color: const Color(0xFFEAF1FF),
+                    borderRadius: BorderRadius.circular(28),
                   ),
-                  child: selectedImage == null
-                      ? const Center(
-                          child: Text(
-                            'No image selected',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                        )
-                      : ClipRect(
-                          child: Image.file(
-                            File(selectedImage!.path),
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
+                  child: const Icon(
+                    Icons.camera_rounded,
+                    size: 58,
+                    color: Color(0xFF3984E8),
+                  ),
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 26),
 
-              // Gallery and Camera buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Gallery button
-                  ElevatedButton(
-                    onPressed: GalleryDocument,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF7F1FC),
-                      foregroundColor: const Color(0xFF7050A0),
-                      shape: const StadiumBorder(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 35,
-                        vertical: 18,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.photo,
-                      size: 28,
-                    ),
+              // Heading
+              const Center(
+                child: Text(
+                  'Scan Document',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF24212B),
                   ),
-
-                  // Camera button
-                  ElevatedButton(
-                    onPressed: openDocumentScanner,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF7F1FC),
-                      foregroundColor: const Color(0xFF7050A0),
-                      shape: const StadiumBorder(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 35,
-                        vertical: 18,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.camera,
-                      size: 28,
-                    ),
-                  ),
-                ],
+                ),
               ),
 
-              const Spacer(flex: 2),
-              const SizedBox(height: 10),
-//////////////////////////////////////////////// scan button
-              ElevatedButton.icon(
-                onPressed: () {
-                  scanDocument();
-                },
-                icon: const Icon(Icons.document_scanner),
-                label: const Text('Scan Document'),
+              const SizedBox(height: 12),
+
+              // Subtitle
+              const Center(
+                child: Text(
+                  'Capture documents and\n'
+                  'turn your documents into digital files.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.6,
+                    color: Color(0xFF77737F),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 38),
+
+              // Section title
+              const Text(
+                'Choose your document source',
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF292631),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Open Camera card
+              _buildSourceCard(
+                icon: Icons.camera_alt_rounded,
+                title: 'Open Camera',
+                subtitle: 'Capture a document using your camera',
+                iconBackground: const Color(0xFFEAF1FF),
+                iconColor: const Color(0xFF3984E8),
+                onTap: openDocumentScanner,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Select from Storage card
+              _buildSourceCard(
+                icon: Icons.folder_rounded,
+                title: 'Select from Storage',
+                subtitle: 'Choose an image or PDF from your phone',
+                iconBackground: const Color(0xFFFBEAF0),
+                iconColor: const Color(0xFFD47797),
+                onTap: GalleryDocument,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSourceCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color iconBackground,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 20,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: const Color(0xFFECE9F1),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 68,
+                height: 68,
+                decoration: BoxDecoration(
+                  color: iconBackground,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  icon,
+                  size: 32,
+                  color: iconColor,
+                ),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF292631),
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.4,
+                        color: Color(0xFF77737F),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 26,
+                color: Color(0xFF77737F),
               ),
             ],
           ),
