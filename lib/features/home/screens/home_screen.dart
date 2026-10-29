@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:smart_scanner/features/home/screens/camera.dart' show ScanDocs, camera;
+
+import 'package:smart_scanner/features/home/screens/Setting_Icon.dart';
+import 'package:smart_scanner/features/home/screens/camera.dart'
+    show ScanDocs, camera;
 //import '../../../core/models/scanned_document.dart';
 import '../controllers/document_list_controller.dart';
 //import '../../ai_assistant/screens/ai_summary_screen.dart';
@@ -34,7 +37,14 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsIcon(),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.settings),
                   ),
                 ],
@@ -66,10 +76,8 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: const Color(0xFF3B82F6),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
         onPressed: () {
-          
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const ScanDocs()));
-              
         },
       ),
       body: CustomScrollView(
@@ -86,7 +94,7 @@ class HomeScreen extends ConsumerWidget {
                 childAspectRatio: 1.35,
                 children: [
                   HomepageContainers(
-                    iconColor: Colors.blueAccent,
+                      iconColor: Colors.blueAccent,
                       ic: Icons.settings_rounded,
                       name: "Scan\nDocuments",
                       onClick: () {
@@ -98,7 +106,7 @@ class HomeScreen extends ConsumerWidget {
                         );
                       }),
                   const HomepageContainers(
-                    iconColor: Colors.blue,
+                      iconColor: Colors.blue,
                       ic: (Icons.text_snippet_outlined),
                       name: 'Extract\nText (OCR)'),
                   const HomepageContainers(
@@ -107,8 +115,9 @@ class HomeScreen extends ConsumerWidget {
                     name: 'View &\nEdit PDF',
                   ),
                   const HomepageContainers(
-                    iconColor: Colors.blue,
-                      ic: Icons.auto_awesome, name: 'AI Summarize\n& Q&A'),
+                      iconColor: Colors.blue,
+                      ic: Icons.auto_awesome,
+                      name: 'AI Summarize\n& Q&A'),
                 ],
               ),
             ),
@@ -164,56 +173,6 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-/// card containers
-// class _QuickActionCard extends StatelessWidget {
-//   final IconData icon;
-//   final String label;
-//   final Color iconColor;
-//   final VoidCallback onTap;
-
-//   const _QuickActionCard({
-//     required this.icon,
-//     required this.label,
-//     required this.iconColor,
-//     required this.onTap,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return InkWell(
-//       onTap: onTap,
-//       borderRadius: BorderRadius.circular(16),
-//       child: Ink(
-//         decoration: BoxDecoration(
-//           color: const Color.fromARGB(255, 228, 230, 234),
-//           borderRadius: BorderRadius.circular(16),
-//           border: Border.all(color: Colors.white.withOpacity(0.06)),
-//         ),
-//         padding: const EdgeInsets.all(16),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             Container(
-//               padding: const EdgeInsets.all(8),
-//               decoration: BoxDecoration(
-//                 color: iconColor.withOpacity(0.15),
-//                 borderRadius: BorderRadius.circular(10),
-//               ),
-//               child: Icon(icon, color: iconColor, size: 24),
-//             ),
-//             Text(
-//               label,
-//               style: const TextStyle(
-//                   fontWeight: FontWeight.w600, fontSize: 13, height: 1.2),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class HomepageContainers extends StatelessWidget {
   final IconData ic;
   final String name;
@@ -236,7 +195,7 @@ class HomepageContainers extends StatelessWidget {
         onTap: onClick,
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          height: 190,
+          height: 250,
           width: 190,
           decoration: BoxDecoration(
             color: const Color.fromARGB(66, 248, 245, 245),
@@ -254,9 +213,11 @@ class HomepageContainers extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: onClick,
-                icon: Icon(ic,color: iconColor,),
-                iconSize: 45,
-                
+                icon: Icon(
+                  ic,
+                  color: iconColor,
+                ),
+                iconSize: 40,
               ),
               Text(
                 name,
