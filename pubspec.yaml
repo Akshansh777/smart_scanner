@@ -39,6 +39,8 @@ dependencies:
   cunning_document_scanner: ^3.0.4
   path: ^1.9.1
   shared_preferences: ^2.5.6
+  file_picker: ^11.0.3
+  flutter_dotenv: ^6.0.1
 
 dev_dependencies:
   flutter_test:
@@ -51,3 +53,4 @@ flutter:
 
   assets:
     - assets/image/hutao.jpeg
+    - .env

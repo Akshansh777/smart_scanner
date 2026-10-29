@@ -41,7 +41,7 @@ class _SettingsPageState extends State<SettingsIcon> {
 
           Center(
             child: Text(
-              'My Profile',
+              'Krishna Rana',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -92,8 +92,8 @@ class _SettingsPageState extends State<SettingsIcon> {
 
           const SizedBox(height: 12),
 
-          Card(
-            child: const ListTile(
+          const Card(
+            child: ListTile(
               leading: Icon(Icons.document_scanner_outlined),
               title: Text('AI Document Scanner'),
               subtitle: Text('Scan, extract text and summarize documents'),
@@ -102,12 +102,12 @@ class _SettingsPageState extends State<SettingsIcon> {
 
           const SizedBox(height: 25),
 
-          Center(
-            child: Text(
-              'AI Document Scanner',
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
+          // Center(
+          //   child: Text(
+          //     'AI Document Scanner',
+          //     style: theme.textTheme.bodySmall,
+          //   ),
+          // ),
         ],
       ),
     );
