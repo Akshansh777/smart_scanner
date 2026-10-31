@@ -54,3 +54,5 @@ flutter:
   assets:
     - assets/image/hutao.jpeg
     - .env
+dependency_overrides:
+  archive: ^4.4.0
