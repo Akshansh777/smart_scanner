@@ -127,7 +127,7 @@ class _ScanDocsState extends State<ScanDocs> {
     return savedPaths;
   }
 
-  Future<void> openDocumentScanner() async {
+  Future<void> openDocumentScanner() async {///// crop,,filter,enchance,clean,rotate
     try {
       final images = await CunningDocumentScanner.getPictures();
 

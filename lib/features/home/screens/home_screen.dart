@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:smart_scanner/features/home/screens/Setting_Icon.dart';
+import 'package:smart_scanner/features/home/screens/person_Icon.dart';
 import 'package:smart_scanner/features/home/screens/camera.dart'
     show ScanDocs, camera;
 //import '../../../core/models/scanned_document.dart';
-import '../../scanner/Extract  ORC/orc.dart' show ExtractOcrScreen;
+import '../../scanner/Extract  ORC/orc_screen.dart' show ExtractOcrScreen;
 import '../controllers/document_list_controller.dart';
 //import '../../ai_assistant/screens/ai_summary_screen.dart';
 
@@ -46,7 +46,10 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.person_add_alt_1,size: 32,),
+                    icon: const Icon(
+                      Icons.person_add_alt_1,
+                      size: 32,
+                    ),
                   ),
                 ],
               ),

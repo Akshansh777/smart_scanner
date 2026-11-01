@@ -23,12 +23,12 @@ dependencies:
   simplest_document_scanner: ^1.0.1
 
   # UI
-  flutter_markdown: ^0.7.1
+  flutter_markdown: ^0.7.7+1
   intl: ^0.19.0
   uuid: ^4.3.3
 
   # Document Scanner
-  google_mlkit_document_scanner: ^0.4.1
+  google_mlkit_document_scanner: ^0.6.1
   google_mlkit_text_recognition: ^0.16.0
   syncfusion_flutter_pdfviewer: ^32.2.9
   pdf: ^3.10.8
@@ -41,6 +41,7 @@ dependencies:
   shared_preferences: ^2.5.6
   file_picker: ^11.0.3
   flutter_dotenv: ^6.0.1
+  pdfx: ^2.11.0
 
 dev_dependencies:
   flutter_test:
