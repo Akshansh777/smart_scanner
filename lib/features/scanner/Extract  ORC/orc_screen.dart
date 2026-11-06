@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 
@@ -8,8 +9,9 @@ import 'package:cunning_document_scanner/cunning_document_scanner.dart'
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:share_plus/share_plus.dart' show SharePlus, ShareParams;
 
-import 'service/orc_service.dart';
+import '../../../core/services/orc_service.dart';
 
 class ExtractOcrScreen extends StatefulWidget {
   const ExtractOcrScreen({super.key});
@@ -86,7 +88,8 @@ class _ExtractOcrScreenState extends State<ExtractOcrScreen> {
 
       final result = await _aiOcrService.extractTextAndAnalyze(imagePaths);
       if (!mounted) return;
-
+/////////////////////////////////////////////////////////////
+//   Alert Page
       await showDialog<void>(
         context: context,
         builder: (dialogContext) {
@@ -98,13 +101,17 @@ class _ExtractOcrScreenState extends State<ExtractOcrScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
             ),
-            title: const Text(
-              'Document Analysis',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Document Analysis'),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
             content: SizedBox(
               width: double.maxFinite,
@@ -114,31 +121,31 @@ class _ExtractOcrScreenState extends State<ExtractOcrScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Extracted OCR text heading.
-                    const Text(
-                      'EXTRACTED TEXT',
-                      style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
+                    // const Text(
+                    //   'EXTRACTED TEXT',
+                    //   style: TextStyle(
+                    //     fontSize: 19,
+                    //     fontWeight: FontWeight.bold,
+                    //     color: Colors.black,
+                    //   ),
+                    // ),
 
-                    const SizedBox(height: 10),
+                    // const SizedBox(height: 10),
 
-                    //Original OCR output.
-                    SelectableText(
-                      result.extractedText,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.black87,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 26),
+                    // //Original OCR output.
+                    // SelectableText(
+                    //   result.extractedText,
+                    //   style: const TextStyle(
+                    //     fontSize: 15,
+                    //     color: Colors.black87,
+                    //     height: 1.5,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 26),
 
                     // AI summary heading.
                     const Text(
-                      'AI SUMMARY',
+                      'AI SUMMARY:-',
                       style: TextStyle(
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
@@ -148,9 +155,10 @@ class _ExtractOcrScreenState extends State<ExtractOcrScreen> {
 
                     const SizedBox(height: 10),
 
-                    // Render Markdown instead of showing raw symbols.
+                    // to make different section
                     MarkdownBody(
-                      data: result.aiResponse,
+                      data: result
+                          .aiResponse, // we store AI summery in result.aiResponse varible
                       selectable: true,
                       styleSheet: MarkdownStyleSheet(
                         h1: const TextStyle(
@@ -193,16 +201,31 @@ class _ExtractOcrScreenState extends State<ExtractOcrScreen> {
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text(
-                  'Close',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF6550A4),
-                  ),
-                ),
+              TextButton.icon(
+                onPressed: () {
+                  Clipboard.setData(
+                    ClipboardData(text: result.aiResponse),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Summary copied!'),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.copy),
+                label: const Text('Copy'),
+              ),
+              TextButton.icon(
+                onPressed: () {
+                  SharePlus.instance.share(
+                    ShareParams(
+                      text: result.aiResponse,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.share),
+                label: const Text('Share'),
               ),
             ],
           );
