@@ -1,18 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 
-class GeminiOcrService {
-  static String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
+class GroqOcrService {
+  static String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? '';
 
   static Future<String> analyzeDocument(String imagePath) async {
     // 1. Validate API key
     if (_apiKey.trim().isEmpty) {
       throw Exception(
-        'Gemini API key is missing. Check your .env configuration.',
+        'Groq API key is missing. Check your .env configuration.',
       );
     }
 
@@ -41,13 +42,13 @@ class GeminiOcrService {
         ),
     };
 
-    // 4. Initialize Gemini
-    final model = GenerativeModel(
-      model: 'gemini-3.8-flash',
-      apiKey: _apiKey.trim(),
-    );
+    // 4. Convert image to Base64
+    final base64Image = base64Encode(imageBytes);
 
-    // 5. OCR-only prompt
+    // Groq expects the local image as a data URL
+    final imageDataUrl = 'data:$mimeType;base64,$base64Image';
+
+    // 5. OCR prompt
     const prompt = '''
 You are a precise OCR engine.
 
@@ -67,7 +68,7 @@ STRICT RULES:
 TRANSCRIPTION:
 ''';
 
-    // 6. Send request with timeout and retry handling
+    // 6. Retry handling
     const maxAttempts = 2;
 
     for (var attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -75,66 +76,164 @@ TRANSCRIPTION:
 
       try {
         debugPrint(
-          'Sending Gemini request. Attempt $attempt of $maxAttempts.',
+          'Sending Groq Vision request. '
+          'Attempt $attempt of $maxAttempts.',
         );
 
-        final response = await model.generateContent([
-          Content.multi([
-            TextPart(prompt),
-            DataPart(mimeType, imageBytes),
-          ]),
-        ]).timeout(const Duration(seconds: 60));
+        final response = await http
+            .post(
+              Uri.parse(
+                'https://api.groq.com/openai/v1/chat/completions',
+              ),
+              headers: {
+                'Authorization': 'Bearer ${_apiKey.trim()}',
+                'Content-Type': 'application/json',
+              },
+              body: jsonEncode({
+                'model': 'qwen/qwen3.8-27b',
+                'messages': [
+                  {
+                    'role': 'user',
+                    'content': [
+                      {
+                        'type': 'text',
+                        'text': prompt,
+                      },
+                      {
+                        'type': 'image_url',
+                        'image_url': {
+                          'url': imageDataUrl,
+                        },
+                      },
+                    ],
+                  },
+                ],
+                'temperature': 0.1,
+                'max_completion_tokens': 2048,
+              }),
+            )
+            .timeout(
+              const Duration(seconds: 60),
+            );
 
         stopwatch.stop();
 
         debugPrint(
-          'Gemini request took '
+          'Groq request took '
           '${stopwatch.elapsed.inSeconds} seconds.',
         );
 
-        final result = response.text?.trim();
+        debugPrint(
+          'Groq HTTP status: ${response.statusCode}',
+        );
 
-        if (result == null || result.isEmpty) {
-          throw Exception('Gemini returned an empty response.');
+        // 7. Successful response
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+
+          final result =
+              data['choices']?[0]?['message']?['content']?.toString().trim();
+
+          if (result == null || result.isEmpty) {
+            throw Exception(
+              'Groq returned an empty response.',
+            );
+          }
+
+          debugPrint(
+            'Groq OCR completed successfully.',
+          );
+
+          return result;
         }
 
-        debugPrint('Gemini OCR completed successfully.');
+        // 8. Handle API errors
+        final errorBody = response.body;
 
-        return result;
+        debugPrint(
+          'GROQ API ERROR ${response.statusCode}: $errorBody',
+        );
+
+        final error = errorBody.toLowerCase();
+
+        final isTemporaryError = response.statusCode == 429 ||
+            response.statusCode == 500 ||
+            response.statusCode == 502 ||
+            response.statusCode == 503 ||
+            error.contains('timeout') ||
+            error.contains('temporarily unavailable') ||
+            error.contains('rate limit');
+
+        // Invalid API key
+        if (response.statusCode == 401) {
+          throw Exception(
+            'Groq API key is invalid. '
+            'Check your GROQ_API_KEY in the .env file.',
+          );
+        }
+
+        // Don't retry permanent errors
+        if (!isTemporaryError || attempt == maxAttempts) {
+          throw Exception(
+            'Groq OCR failed. '
+            'HTTP ${response.statusCode}: $errorBody',
+          );
+        }
+
+        debugPrint(
+          'Temporary Groq error. Retrying in 2 seconds...',
+        );
+
+        await Future.delayed(
+          const Duration(seconds: 2),
+        );
       } catch (e, stackTrace) {
         stopwatch.stop();
+
+        debugPrint(
+          'GROQ OCR ERROR: $e',
+        );
 
         final error = e.toString().toLowerCase();
 
         final isTemporaryError = e is TimeoutException ||
-            error.contains('503') ||
-            error.contains('unavailable') ||
-            error.contains('429') ||
-            error.contains('resource_exhausted') ||
-            error.contains('deadline exceeded') ||
             error.contains('timeout') ||
-            error.contains('socketexception');
+            error.contains('503') ||
+            error.contains('502') ||
+            error.contains('500') ||
+            error.contains('429') ||
+            error.contains('socketexception') ||
+            error.contains('temporarily unavailable');
 
-        debugPrint('GEMINI API ERROR: $e');
-
+        // If it's a permanent error, don't retry.
         if (!isTemporaryError || attempt == maxAttempts) {
-          debugPrint('STACK TRACE: $stackTrace');
+          debugPrint(
+            'STACK TRACE: $stackTrace',
+          );
 
           if (e is TimeoutException) {
             throw Exception(
-              'Gemini request timed out. Please try again.',
+              'Groq request timed out. Please try again.',
             );
           }
 
           rethrow;
         }
 
-        debugPrint('Temporary error. Retrying in 2 seconds.');
+        debugPrint(
+          'Temporary error. Retrying in 2 seconds...',
+        );
 
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(
+          const Duration(seconds: 2),
+        );
       }
     }
 
-    throw Exception('Gemini OCR failed after retries.');
+    throw Exception(
+      'Groq OCR failed after retries.',
+    );
   }
 }
+
+
