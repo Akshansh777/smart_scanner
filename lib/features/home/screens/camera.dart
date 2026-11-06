@@ -127,7 +127,8 @@ class _ScanDocsState extends State<ScanDocs> {
     return savedPaths;
   }
 
-  Future<void> openDocumentScanner() async {///// crop,,filter,enchance,clean,rotate
+  Future<void> openDocumentScanner() async {
+    ///// crop,,filter,enchance,clean,rotate
     try {
       final images = await CunningDocumentScanner.getPictures();
 
@@ -140,7 +141,7 @@ class _ScanDocsState extends State<ScanDocs> {
       if (!mounted) return;
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const ScanDocs()),// SON ARUNRAJ HERE 
         (route) => false,
       );
     } catch (e, stackTrace) {

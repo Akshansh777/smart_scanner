@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_scanner/core/theme/theme_provider.dart'
+    show themeModeProvider;
 
-class SettingsIcon extends StatefulWidget {
+class SettingsIcon extends ConsumerStatefulWidget {
   const SettingsIcon({super.key});
 
   @override
-  State<SettingsIcon> createState() => _SettingsPageState();
+  ConsumerState<SettingsIcon> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsIcon> {
+class _SettingsPageState extends ConsumerState<SettingsIcon> {
   ThemeMode selectedTheme = ThemeMode.system;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final selectedTheme = ref.watch(themeModeProvider);
+
+    ///
 
     return Scaffold(
       appBar: AppBar(
@@ -95,19 +101,12 @@ class _SettingsPageState extends State<SettingsIcon> {
           const Card(
             child: ListTile(
               leading: Icon(Icons.document_scanner_outlined),
-              title: Text('AI Document Scanner'),
+              title: Text('AI Smart Scanner'),
               subtitle: Text('Scan, extract text and summarize documents'),
             ),
           ),
 
           const SizedBox(height: 25),
-
-          // Center(
-          //   child: Text(
-          //     'AI Document Scanner',
-          //     style: theme.textTheme.bodySmall,
-          //   ),
-          // ),
         ],
       ),
     );
@@ -169,9 +168,7 @@ class _SettingsPageState extends State<SettingsIcon> {
           ? const Icon(Icons.check_circle, color: Colors.blue)
           : null,
       onTap: () {
-        setState(() {
-          selectedTheme = mode;
-        });
+        ref.read(themeModeProvider.notifier).state = mode;
 
         Navigator.pop(sheetContext);
       },
@@ -180,3 +177,4 @@ class _SettingsPageState extends State<SettingsIcon> {
 }
 
 //'assets/image/hutao.jpeg',
+/////////////////////////////////////////////////
