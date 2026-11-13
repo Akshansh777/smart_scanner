@@ -6,6 +6,8 @@ import 'package:smart_scanner/features/home/screens/person_Icon.dart';
 import 'package:smart_scanner/features/home/screens/camera.dart'
     show ScanDocs, camera;
 //import '../../../core/models/scanned_document.dart';
+import '../../pdf_workspace/screens/pdf_workspace_screen.dart'
+    show PdfWorkspaceScreen;
 import '../../scanner/Extract  ORC/orc_screen.dart' show ExtractOcrScreen;
 import '../controllers/document_list_controller.dart';
 //import '../../ai_assistant/screens/ai_summary_screen.dart';
@@ -122,10 +124,18 @@ class HomeScreen extends ConsumerWidget {
                       );
                     },
                   ),
-                  const HomepageContainers(
+                  HomepageContainers(
                     iconColor: Colors.red,
                     ic: Icons.picture_as_pdf_outlined,
                     name: 'View &\nEdit PDF',
+                    onClick: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PdfWorkspaceScreen(),
+                        ),
+                      );
+                    },
                   ),
                   const HomepageContainers(
                       iconColor: Colors.blue,
@@ -147,7 +157,14 @@ class HomeScreen extends ConsumerWidget {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PdfWorkspaceScreen(),
+                        ),
+                      );
+                    },
                     child: const Text('See All',
                         style: TextStyle(color: Color(0xFF3B82F6))),
                   ),
