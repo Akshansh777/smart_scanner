@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import '../../pdf_workspace/screens/pdf_workspace_screen.dart';
 
 class MainNavScaffold extends StatefulWidget {
   
@@ -14,7 +15,7 @@ class _MainNavScaffoldState extends State<MainNavScaffold> {
 
   final List<Widget> _pages = const [
     HomeScreen(),
-    Center(child: Text("All Documents View (Member 3)")),
+    PdfWorkspaceScreen(),
     Center(child: Text("AI Workspace")),
     Center(child: Text("Settings")),
   ];

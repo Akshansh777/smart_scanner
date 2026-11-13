@@ -24,6 +24,15 @@ class DocumentListController extends StateNotifier<List<ScannedDocument>> {
     loadDocuments();
   }
 
+  Future<void> renameDocument(String docId, String newTitle) async {
+    final existing = _dbService.getDocument(docId);
+    if (existing != null) {
+      final updated = existing.copyWith(title: newTitle.trim());
+      await _dbService.saveDocument(updated);
+      loadDocuments();
+    }
+  }
+
   Future<void> updateDocumentSummary(String docId, String summary) async {
     final existing = _dbService.getDocument(docId);
     if (existing != null) {
