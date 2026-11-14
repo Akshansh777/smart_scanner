@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_scanner/features/home/screens/person_Icon.dart';
 import 'package:smart_scanner/features/home/screens/camera.dart'
     show ScanDocs, camera;
+import 'package:smart_scanner/features/pdf_workspace/screens/pdf_viewer_screen.dart';
 //import '../../../core/models/scanned_document.dart';
 import '../../pdf_workspace/screens/pdf_workspace_screen.dart'
     show PdfWorkspaceScreen;
@@ -192,9 +193,50 @@ class HomeScreen extends ConsumerWidget {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final doc = documents[index];
-                      return HomeScreen();
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.picture_as_pdf,
+                              color: Colors.red,
+                            ),
+                          ),
+                          title: Text(
+                            doc.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            '${doc.pageCount} ${doc.pageCount == 1 ? 'page' : 'pages'}',
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PdfViewerScreen(
+                                  document: doc,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
                     },
-                    childCount: documents.length,
+                    childCount: documents.length > 3 ? 3 : documents.length,
                   ),
                 ),
         ],
